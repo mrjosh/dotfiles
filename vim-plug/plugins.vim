@@ -1,4 +1,3 @@
-" auto-install vim-plug
 if empty(glob('~/.config/nvim/autoload/plug.vim'))
   silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -6,60 +5,38 @@ if empty(glob('~/.config/nvim/autoload/plug.vim'))
 endif
 
 call plug#begin('~/.config/nvim/plugged')
+
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-Plug 'towolf/vim-helm'
-Plug 'pearofducks/ansible-vim'
-Plug 'posva/vim-vue'
-Plug 'preservim/nerdcommenter'
-"Plug 'udalov/kotlin-vim'
-"Plug 'tpope/vim-surround'
-"Plug 'mhinz/vim-startify'
-"Plug 'justinmk/vim-sneak'
-"Plug 'jelera/vim-javascript-syntax'
-Plug 'pangloss/vim-javascript'
-"Plug 'jnwhiteh/vim-golang'
-Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
 
-"File Search:
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'preservim/nerdcommenter'
+
+" telescope requirements...
+Plug 'nvim-lua/popup.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope-fzy-native.nvim'
+
+" FZF
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
-"File Browser:
 Plug 'scrooloose/nerdtree'
-"Plug 'jistr/vim-nerdtree-tabs'
+"Plug 'PhilRunninger/nerdtree-visual-selection' 
+
 Plug 'mkitt/tabline.vim'
-"Plug 'ryanoasis/vim-devicons'
-"Plug 'preservim/nerdtree'
-
-"Color:
-Plug 'morhetz/gruvbox'
+Plug 'tweekmonster/gofmt.vim'
+Plug 'gruvbox-community/gruvbox'
+Plug 'sainnhe/gruvbox-material'
 Plug 'kaicataldo/material.vim', { 'branch': 'main' }
-"Plug 'whatyouhide/vim-gotham'
-"Plug 'ayu-theme/ayu-vim'
-"Plug 'liuchengxu/space-vim-dark'
-"Plug 'sainnhe/gruvbox-material'
-Plug 'hashivim/vim-terraform'
-Plug 'hzchirs/vim-material'
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate', 'commit': '3c07232'} 
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate', 'commit': '3c07232'}
+"Plug 'https://github.com/Valloric/YouCompleteMe'
 
-"Golang:
-Plug 'fatih/vim-go' 
-"Plug 'neoclide/coc.nvim', {'do': 'yarn install --frozen-lockfile'}
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'joshdick/onedark.vim'
 
-"Autocomplete:
-Plug 'ncm2/ncm2'
-"Plug 'ncm2/ncm2-go'
-Plug 'roxma/nvim-yarp'
-"Plug 'roxma/vim-hug-neovim-rpc'
-Plug 'stamblerre/gocode', { 'rtp': 'nvim', 'do': '~/.config/nvim/plugged/gocode/nvim/symlink.sh' }
-
-"Snippets:
-Plug 'ncm2/ncm2-ultisnips'
-Plug 'SirVer/ultisnips'
-
-"Git:
-"Plug 'tpope/vim-fugitive'
+"Plug 'phaazon/hop.nvim'
+Plug 'phaazon/hop.nvim', { 'branch': 'pre-extmarks' }
+Plug 'sainnhe/edge'
 
 call plug#end()
-

@@ -16,6 +16,9 @@ set expandtab
 set tabstop=2
 set shiftwidth=2
 
+let g:gofmt_on_save = 1
+let g:gofmt_exe = "/Users/josh/.go/bin/goimports"
+
 "INDENTATION:
 "------------
 "Highlights code for multiple indents without reselecting
@@ -25,83 +28,80 @@ vnoremap > >gv
 "COLOR:
 "------
 set background=dark
+"colorscheme material
 colorscheme material
 
- "let g:material_theme_style = 'default' | 'palenight' | 'ocean' | 'lighter' | 'darker' | 'default-community' | 'palenight-community' | 'ocean-community' | 'lighter-community' | 'darker-community'
+let g:gruvbox_contrast_dark = 'hard'
+let g:material_theme_style = 'palenight-community'
+let g:gruvbox_invert_selection='0'
 
-let g:material_theme_style = 'darker-community'
-"let g:material_terminal_italics = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#buffer_nr_show = 1
+
+highlight ColorColumn ctermbg=0 guibg=grey
+highlight Normal guibg=none
+highlight LineNr guifg=#ff8659
+highlight LineNr guifg=#aed75f
+highlight LineNr guifg=#5eacd3
+highlight netrwDir guifg=#5eacd3
+highlight qfFileName guifg=#aed75f
+
+"lua <<EOF
+"local actions = require('telescope.actions')
+"require('telescope').setup {
+  "defaults = {
+    "mappings = {
+      "i = {
+	"['<Down>'] = actions.move_selection_previous,
+      "},
+    "},
+  "},
+"}
+"EOF
+
+hi TelescopeBorder guifg=#5eacd
+highlight TelescopeSelection      guifg=#D79921 gui=bold " selected item
+
+nnoremap <C-p> :lua require('telescope.builtin').find_files(require('telescope.themes').get_dropdown({shorten_path = false,border = true,previewer = false}))<CR>
+""nnoremap <C-p> :lua require('telescope.builtin').find_files()<CR>
+"nnoremap <leader>pb :lua require('telescope.builtin').buffers()<CR>
+"nnoremap <leader>ps :lua require('telescope.builtin').grep_string({ search = vim.fn.input("Grep For > ")})<CR>
+"autocmd User TelescopePreviewerLoaded setlocal wrap
+
+augroup highlight_yank
+    autocmd!
+    autocmd TextYankPost * silent! lua require'vim.highlight'.on_yank({timeout = 40})
+augroup END
+
+"map gd :YcmCompleter GoToDeclaration<CR>
+"map gr :YcmCompleter GoToReferences<CR>
+
+" COC
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+nmap <leader> qf <Plug>(coc-fix-current)
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  elseif (coc#rpc#ready())
+    call CocActionAsync('doHover')
+  else
+    execute '!' . &keywordprg . " " . expand('<cword>')
+  endif
+endfunction
+
+nnoremap <silent> K :call <SID>show_documentation()<CR>
 
 if (has('termguicolors'))
   set termguicolors
 endif
 
 set encoding=UTF-8
-
-let g:go_fmt_command = "goimports"
-
-lua <<EOF
-require'nvim-treesitter.configs'.setup {
-  ensure_installed = "all",
-  highlight = {
-    enable = true,
-  },
-}
-EOF
-
-"AUTOCOMPLETE:
-"-------------
-augroup ncm2
-  au!
-  autocmd BufEnter * call ncm2#enable_for_buffer()
-  set completeopt=noinsert,menuone,noselect
-  au User Ncm2PopupOpen set completeopt=noinsert,menuone,noselect
-  au User Ncm2PopupClose set completeopt=menuone
-augroup END
-"Press Enter to select item in autocomplete popup
-inoremap <silent> <expr> <CR> (pumvisible() ? ncm2_ultisnips#expand_or("\<CR>", 'n') : "\<CR>")
-"Cycle through completion entries with tab/shift+tab
-inoremap <expr> <TAB> pumvisible() ? "\<c-n>" : "\<TAB>"
-inoremap <expr> <s-tab> pumvisible() ? "\<c-p>" : "\<TAB>"
-"Allow getting out of pop with Down/Up arrow keys
-inoremap <expr> <down> pumvisible() ? "\<C-E>" : "\<down>"
-inoremap <expr> <up> pumvisible() ? "\<C-E>" : "\<up>"
-
-"SNIPPETS:
-"---------
-"Change default expand since TAB is used to cycle options
-let g:UltiSnipsExpandTrigger="<c-j>"
-let g:UltiSnipsJumpForwardTrigger="<c-j>"
-let g:UltiSnipsJumpBackwardTrigger="<c-k>"
-
-"FILE SEARCH:
-"------------
-"allows FZF to open by pressing CTRL-F
-map <C-p> :FZF<CR>
-"allow FZF to search hidden 'dot' files
-"let $FZF_DEFAULT_COMMAND = "find -L"
-
-let $FZF_DEFAULT_COMMAND='rg --files --follow --no-ignore-vcs --hidden -g "!{node_modules/*,.git/*,.idea/*}"'
-
-"FILE BROWSER:
-"-------------
-"allows NERDTree to open/close by typing 'n' then 't'
-"map nt :NERDTreeTabsToggle<CR>
-"Start NERDtree when dir is selected (e.g. "vim .") and start NERDTreeTabs
-"let g:nerdtree_tabs_open_on_console_startup=2
-"Add a close button in the upper right for tabs
-"let g:tablineclosebutton=1
-"Automatically find and select currently opened file in NERDTree
-"let g:nerdtree_tabs_autofind=1
-"Add folder icon to directories
-"let g:WebDevIconsUnicodeDecorateFolderNodes = 1
-"let g:DevIconsEnableFoldersOpenClose = 1
-"let g:NERDTreeDirArrowExpandable = "\u00a0"
-"let g:NERDTreeDirArrowCollapsible = "\u00a0"
-"let g:WebDevIconsNerdTreeBeforeGlyphPadding = ""
-"highlight! link NERDTreeFlags NERDTreeDir
+set nohlsearch
+lua require'nvim-treesitter.configs'.setup { highlight = { enable = true } }
 
 "SHORTCUTS:
 "----------
@@ -119,7 +119,6 @@ autocmd! bufwritepost init.vim source %
 "------------
 "Makes Search Case Insensitive
 set ignorecase
-
 set noswapfile
 
 "GIT (FUGITIVE):
@@ -142,80 +141,9 @@ nnoremap <silent> <C-l> :nohl<CR><C-l>
 " Highlight the current line the cursor is on
 set cursorline
 
-" -------------------------------------------------------------------------------------------------
-" coc.nvim default settings
-" -------------------------------------------------------------------------------------------------
-
-" if hidden is not set, TextEdit might fail.
-set hidden
-" Better display for messages
-set cmdheight=2
-" Smaller updatetime for CursorHold & CursorHoldI
-set updatetime=300
-" don't give |ins-completion-menu| messages.
-set shortmess+=c
-" always show signcolumns
-set signcolumn=yes
-
-" Use tab for trigger completion with characters ahead and navigate.
-" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-" Use <c-space> to trigger completion.
-inoremap <silent><expr> <c-space> coc#refresh()
-
-" Use `[c` and `]c` to navigate diagnostics
-"nmap <silent> [c <Plug>(coc-diagnostic-prev)
-"nmap <silent> ]c <Plug>(coc-diagnostic-next)
-
-"" Remap keys for gotos
-"nmap <silent> gd <Plug>(coc-definition)
-"nmap <silent> gy <Plug>(coc-type-definition)
-"nmap <silent> gi <Plug>(coc-implementation)
-"nmap <silent> gr <Plug>(coc-references)
-
-nmap <silent> gd :YcmCompleter GoTo<CR>
-nmap <silent> gr :YcmCompleter GoToReferences<CR>
-nmap <silent> rr :YcmCompleter RefactorRename<CR>
-
-" Use U to show documentation in preview window
-nnoremap <silent> U :call <SID>show_documentation()<CR>
-
-" Remap for rename current word
-"nmap <leader>rn <Plug>(coc-rename)
-
-"" Remap for format selected region
-"vmap <leader>f  <Plug>(coc-format-selected)
-"nmap <leader>f  <Plug>(coc-format-selected)
-"" Show all diagnostics
-"nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
-"" Manage extensions
-"nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
-"" Show commands
-"nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
-"" Find symbol of current document
-"nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
-"" Search workspace symbols
-"nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
-"" Do default action for next item.
-"nnoremap <silent> <space>j  :<C-u>CocNext<CR>
-"" Do default action for previous item.
-"nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
-"" Resume latest coc list
-"nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
-
 " disable vim-go :GoDef short cut (gd)
 " this is handled by LanguageClient [LC]
-let g:go_def_mapping_enabled = 0
+let g:go_def_mapping_enabled = 1
 
 nnoremap <leader>pv :wincmd v<bar> :Ex <bar> :vertical resize 30<CR>
 nnoremap <leader>w :bd<CR>
@@ -232,4 +160,22 @@ let g:sneak#use_ic_scs = 1
 let g:sneak#s_next = 1
 map gS <Plug>Sneak_,
 map gs <Plug>Sneak_;
+
+nnoremap <leader>o :w <bar> %bd <bar> e# <bar> bd# <CR>
+
+"lua require("mrjosh/telescope")
+"nnoremap <C-p> :Files<CR>
+
+" NOPEEEEE
+noremap <Up> <Nop>
+noremap <Down> <Nop>
+noremap <Left> <Nop>
+noremap <Right> <Nop>
+
+"let g:edge_style = 'neon'
+"let g:edge_enable_italic = 1
+"let g:edge_cursor = 'auto'
+"let g:edge_menu_selection_background = 'purple'
+"let g:edge_diagnostic_text_highlight = 1
+"let g:edge_diagnostic_line_highlight = 1
 
