@@ -46,19 +46,6 @@ highlight LineNr guifg=#5eacd3
 highlight netrwDir guifg=#5eacd3
 highlight qfFileName guifg=#aed75f
 
-"lua <<EOF
-"local actions = require('telescope.actions')
-"require('telescope').setup {
-  "defaults = {
-    "mappings = {
-      "i = {
-	"['<Down>'] = actions.move_selection_previous,
-      "},
-    "},
-  "},
-"}
-"EOF
-
 hi TelescopeBorder guifg=#5eacd
 highlight TelescopeSelection      guifg=#D79921 gui=bold " selected item
 
@@ -178,4 +165,7 @@ noremap <Right> <Nop>
 "let g:edge_menu_selection_background = 'purple'
 "let g:edge_diagnostic_text_highlight = 1
 "let g:edge_diagnostic_line_highlight = 1
+
+nnoremap <leader>gb :call SendTerminalCommand(0, "go build . fortress && ./fortress" . expand("%") . "\n")<CR>
+nnoremap <leader>t :terminal<CR>
 
