@@ -49,8 +49,23 @@ highlight qfFileName guifg=#aed75f
 hi TelescopeBorder guifg=#5eacd
 highlight TelescopeSelection      guifg=#D79921 gui=bold " selected item
 
-nnoremap <C-p> :lua require('telescope.builtin').find_files(require('telescope.themes').get_dropdown({shorten_path = false,border = true,previewer = false}))<CR>
-""nnoremap <C-p> :lua require('telescope.builtin').find_files()<CR>
+lua <<EOF
+local actions = require('telescope.actions')
+require('telescope').setup {
+  defaults = {
+    mappings = {
+      i = {
+  ['<C-k>'] = actions.move_selection_previous,
+  ['<C-j>'] = actions.move_selection_next,
+      },
+    },
+  },
+}
+EOF
+
+
+"nnoremap <C-p> :lua require('telescope.builtin').find_files(require('telescope.themes').get_dropdown({shorten_path = false,border = true,previewer = false}))<CR>
+nnoremap <C-p> :lua require('telescope.builtin').find_files()<CR>
 "nnoremap <leader>pb :lua require('telescope.builtin').buffers()<CR>
 "nnoremap <leader>ps :lua require('telescope.builtin').grep_string({ search = vim.fn.input("Grep For > ")})<CR>
 "autocmd User TelescopePreviewerLoaded setlocal wrap
