@@ -184,3 +184,4 @@ noremap <Right> <Nop>
 nnoremap <leader>gb :call SendTerminalCommand(0, "go build . fortress && ./fortress" . expand("%") . "\n")<CR>
 nnoremap <leader>t :terminal<CR>
 
+au BufNewFile,BufRead Jenkinsfile setf groovy
