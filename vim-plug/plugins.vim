@@ -39,4 +39,15 @@ Plug 'joshdick/onedark.vim'
 Plug 'phaazon/hop.nvim', { 'branch': 'pre-extmarks' }
 Plug 'sainnhe/edge'
 
+Plug 'ThePrimeagen/harpoon'
+
+Plug 'b4b4r07/vim-hcl'
+Plug 'pwntester/octo.nvim'
+Plug 'udalov/kotlin-vim'
+
+Plug 'brooth/far.vim'
+Plug 'tpope/vim-fugitive'
+
+Plug 'towolf/vim-helm'
+
 call plug#end()

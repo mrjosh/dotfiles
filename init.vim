@@ -28,11 +28,15 @@ vnoremap > >gv
 "COLOR:
 "------
 set background=dark
-"colorscheme material
 colorscheme material
+"colorscheme gruvbox
 
-let g:gruvbox_contrast_dark = 'hard'
+" material theme baby
 let g:material_theme_style = 'palenight-community'
+
+" gruvbox baby
+let g:gruvbox_contrast_dark = 'hard'
+let g:gruvbox_termcolors=16
 let g:gruvbox_invert_selection='0'
 
 let g:airline#extensions#tabline#enabled = 1
@@ -46,28 +50,54 @@ highlight LineNr guifg=#5eacd3
 highlight netrwDir guifg=#5eacd3
 highlight qfFileName guifg=#aed75f
 
-hi TelescopeBorder guifg=#5eacd
-highlight TelescopeSelection      guifg=#D79921 gui=bold " selected item
-
 lua <<EOF
 local actions = require('telescope.actions')
 require('telescope').setup {
   defaults = {
     mappings = {
       i = {
-  ['<C-k>'] = actions.move_selection_previous,
-  ['<C-j>'] = actions.move_selection_next,
+        ['<C-k>'] = actions.move_selection_previous,
+        ['<C-j>'] = actions.move_selection_next,
       },
     },
   },
 }
 EOF
 
+hi TelescopeBorder guifg=#5eacd
+highlight TelescopeSelection      guifg=#D79921 gui=bold " selected item
 
-"nnoremap <C-p> :lua require('telescope.builtin').find_files(require('telescope.themes').get_dropdown({shorten_path = false,border = true,previewer = false}))<CR>
-nnoremap <C-p> :lua require('telescope.builtin').find_files()<CR>
-"nnoremap <leader>pb :lua require('telescope.builtin').buffers()<CR>
-"nnoremap <leader>ps :lua require('telescope.builtin').grep_string({ search = vim.fn.input("Grep For > ")})<CR>
+lua <<EOF
+search_files = function()
+  require('telescope.builtin').find_files(
+    require('telescope.themes').get_dropdown({
+      shorten_path = false,
+      border = true,
+      previewer = false
+    }
+  ))
+end
+EOF
+nnoremap <C-p> :lua search_files()<CR>
+
+lua <<EOF
+search_dotfiles = function()
+  require("telescope.builtin").find_files(
+    require('telescope.themes').get_dropdown({
+      shorten_path = false,
+      border = true,
+      previewer = false,
+      prompt_title = "< Dotfiles >",
+      cwd = "$HOME/.config/nvim",
+    })
+  ) 
+end
+EOF
+nnoremap <leader>vrc :lua search_dotfiles()<CR>
+
+"nnoremap <C-p> :lua grrequire('telescope.builtin').find_files()<CR>
+nnoremap <leader>pb :lua require('telescope.builtin').buffers()<CR>
+nnoremap <leader>ps :lua require('telescope.builtin').grep_string({ search = vim.fn.input("Grep For > ")})<CR>
 "autocmd User TelescopePreviewerLoaded setlocal wrap
 
 augroup highlight_yank
@@ -75,15 +105,31 @@ augroup highlight_yank
     autocmd TextYankPost * silent! lua require'vim.highlight'.on_yank({timeout = 40})
 augroup END
 
-"map gd :YcmCompleter GoToDeclaration<CR>
-"map gr :YcmCompleter GoToReferences<CR>
-
 " COC
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 nmap <leader> qf <Plug>(coc-fix-current)
+
+nnoremap <leader>pv :wincmd v<bar> :Ex <bar> :vertical resize 30<CR>
+nnoremap <leader>w :bd<CR>
+nnoremap <leader><space> :NERDTreeToggle<CR>
+
+nnoremap <leader>o :w <bar> %bd <bar> e# <bar> bd# <CR>
+nnoremap <leader>hw :HopWord<CR>
+nnoremap <leader>hl :HopLine<CR>
+
+" NOPEEEEE
+noremap <Up> <Nop>
+noremap <Down> <Nop>
+noremap <Left> <Nop>
+noremap <Right> <Nop>
+
+"nnoremap <leader>gb :call SendTerminalCommand(0, "go build . fortress && ./fortress" . expand("%") . "\n")<CR>
+nnoremap <leader>t :terminal<CR>
+
+nnoremap <silent> K :call <SID>show_documentation()<CR>
 
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
@@ -95,14 +141,14 @@ function! s:show_documentation()
   endif
 endfunction
 
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-
 if (has('termguicolors'))
   set termguicolors
 endif
 
 set encoding=UTF-8
 set nohlsearch
+
+" Tree-shitter
 lua require'nvim-treesitter.configs'.setup { highlight = { enable = true } }
 
 "SHORTCUTS:
@@ -129,8 +175,8 @@ map fgb :Gblame<CR>
 map fgs :Gstatus<CR>
 map fgl :Glog<CR>
 map fgd :Gdiff<CR>
-map fgc :Gcommit<CR>
 map fga :Git add %:p<CR>
+map fgp :Git pull<CR>
 
 "SYNTAX HIGHLIGHTING:
 "--------------------
@@ -138,7 +184,6 @@ syntax on
 
 "HIGHLIGHTING:
 "-------------
-" <Ctrl-l> redraws the screen and removes any search highlighting.
 nnoremap <silent> <C-l> :nohl<CR><C-l>
 " Highlight the current line the cursor is on
 set cursorline
@@ -147,14 +192,8 @@ set cursorline
 " this is handled by LanguageClient [LC]
 let g:go_def_mapping_enabled = 1
 
-nnoremap <leader>pv :wincmd v<bar> :Ex <bar> :vertical resize 30<CR>
-nnoremap <leader>w :bd<CR>
-nnoremap <leader><space> :NERDTreeToggle<CR>
-
 hi! Normal ctermbg=NONE guibg=NONE 
 hi! NonText ctermbg=NONE guibg=NONE guifg=NONE ctermfg=NONE 
-
-let g:gruvbox_termcolors=16
 
 " Sneak configurations
 let g:sneak#label = 1
@@ -163,25 +202,7 @@ let g:sneak#s_next = 1
 map gS <Plug>Sneak_,
 map gs <Plug>Sneak_;
 
-nnoremap <leader>o :w <bar> %bd <bar> e# <bar> bd# <CR>
-
-"lua require("mrjosh/telescope")
-"nnoremap <C-p> :Files<CR>
-
-" NOPEEEEE
-noremap <Up> <Nop>
-noremap <Down> <Nop>
-noremap <Left> <Nop>
-noremap <Right> <Nop>
-
-"let g:edge_style = 'neon'
-"let g:edge_enable_italic = 1
-"let g:edge_cursor = 'auto'
-"let g:edge_menu_selection_background = 'purple'
-"let g:edge_diagnostic_text_highlight = 1
-"let g:edge_diagnostic_line_highlight = 1
-
-nnoremap <leader>gb :call SendTerminalCommand(0, "go build . fortress && ./fortress" . expand("%") . "\n")<CR>
-nnoremap <leader>t :terminal<CR>
+lua require('telescope').load_extension('octo')
 
 au BufNewFile,BufRead Jenkinsfile setf groovy
+
