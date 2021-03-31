@@ -1,4 +1,4 @@
-source $HOME/.config/nvim/vim-plug/plugins.vim
+vsource $HOME/.config/nvim/vim-plug/plugins.vim
 
 " COPY/PASTE:
 "-----------
@@ -39,8 +39,8 @@ let g:gruvbox_contrast_dark = 'hard'
 let g:gruvbox_termcolors=16
 let g:gruvbox_invert_selection='0'
 
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#buffer_nr_show = 1
+"let g:airline#extensions#tabline#enabled = 1
+"let g:airline#extensions#tabline#buffer_nr_show = 1
 
 highlight ColorColumn ctermbg=0 guibg=grey
 highlight Normal guibg=none
@@ -50,55 +50,17 @@ highlight LineNr guifg=#5eacd3
 highlight netrwDir guifg=#5eacd3
 highlight qfFileName guifg=#aed75f
 
-lua <<EOF
-local actions = require('telescope.actions')
-require('telescope').setup {
-  defaults = {
-    mappings = {
-      i = {
-        ['<C-k>'] = actions.move_selection_previous,
-        ['<C-j>'] = actions.move_selection_next,
-      },
-    },
-  },
-}
-EOF
-
 hi TelescopeBorder guifg=#5eacd
 highlight TelescopeSelection      guifg=#D79921 gui=bold " selected item
 
-lua <<EOF
-search_files = function()
-  require('telescope.builtin').find_files(
-    require('telescope.themes').get_dropdown({
-      shorten_path = false,
-      border = true,
-      previewer = false
-    }
-  ))
-end
-EOF
-nnoremap <C-p> :lua search_files()<CR>
+nnoremap <C-p> :lua require('mrjosh.telescope').search_files()<CR>
+nnoremap <leader>vrc :lua require('mrjosh.telescope').search_dotfiles()<CR>
 
-lua <<EOF
-search_dotfiles = function()
-  require("telescope.builtin").find_files(
-    require('telescope.themes').get_dropdown({
-      shorten_path = false,
-      border = true,
-      previewer = false,
-      prompt_title = "< Dotfiles >",
-      cwd = "$HOME/.config/nvim",
-    })
-  ) 
-end
-EOF
-nnoremap <leader>vrc :lua search_dotfiles()<CR>
+" Open gists in telescope
+nnoremap <leader>ghg :lua require('mrjosh.gists').gists()<CR>
 
-"nnoremap <C-p> :lua grrequire('telescope.builtin').find_files()<CR>
 nnoremap <leader>pb :lua require('telescope.builtin').buffers()<CR>
 nnoremap <leader>ps :lua require('telescope.builtin').grep_string({ search = vim.fn.input("Grep For > ")})<CR>
-"autocmd User TelescopePreviewerLoaded setlocal wrap
 
 augroup highlight_yank
     autocmd!
@@ -195,14 +157,4 @@ let g:go_def_mapping_enabled = 1
 hi! Normal ctermbg=NONE guibg=NONE 
 hi! NonText ctermbg=NONE guibg=NONE guifg=NONE ctermfg=NONE 
 
-" Sneak configurations
-let g:sneak#label = 1
-let g:sneak#use_ic_scs = 1
-let g:sneak#s_next = 1
-map gS <Plug>Sneak_,
-map gs <Plug>Sneak_;
-
-lua require('telescope').load_extension('octo')
-
 au BufNewFile,BufRead Jenkinsfile setf groovy
-
