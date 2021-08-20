@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+## I yoinked this file from ThePrimeagen =)
+# You can check it out here 
+#
+# https://github.com/ThePrimeagen/.dotfiles/blob/master/bin/.local/bin/tmux-sessionizer
+
 if [[ $# -eq 1 ]]; then
   path=$1
 else
