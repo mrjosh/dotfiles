@@ -1,10 +1,15 @@
-local telescoic_johnson = require('telescope')
-local builtin = require('telescope.builtin')
-local themes = require('telescope.themes')
-local actions = require('telescope.actions')
+local M = {}
+local tele = require 'telescope'
+local builtin = require 'telescope.builtin'
+local themes = require 'telescope.themes'
+local actions = require 'telescope.actions'
 
-telescoic_johnson.setup {
+tele.setup {
   defaults = {
+    file_ignore_patterns = {
+      "vendor",
+      "node_modules",
+    },
     mappings = {
       i = {
         ['<C-k>'] = actions.move_selection_previous,
@@ -14,13 +19,23 @@ telescoic_johnson.setup {
   },
 }
 
-local M = {}
+M.live_grep = function ()
+ builtin.live_grep(
+   themes.get_dropdown({
+     shorten_path = false,
+     border = true,
+     prompt_title = "< LiveGrep >",
+   })
+ )
+end
+
 M.search_files = function()
   builtin.find_files(
     themes.get_dropdown({
       shorten_path = false,
       border = true,
-      previewer = false
+      previewer = false,
+      prompt_title = "< FindFiles >",
     }
   ))
 end
@@ -36,5 +51,5 @@ M.search_dotfiles = function()
     })
   )
 end
-return M
 
+return M
