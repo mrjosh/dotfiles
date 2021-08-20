@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+if [[ $# -eq 1 ]]; then
+  path=$1
+else
+  items=`find $HOME/code $HOME/.config -maxdepth 3 -mindepth 1 -type d`
+  path=`echo "$items" | fzf`
+fi
+
+if [[ $path == "" ]]; then
+  echo "Nothing to do!"
+  exit
+fi
+
+session=`basename $path`
+echo "Opening project $path. Tmux Session Name: [$session]"
+
+tmux switch-client -t $session
+
+if [[ $? -eq 0 ]]; then
+  exit 0
+fi
+
+tmux new-session -c $path -d -s $session &&\
+  tmux switch-client -t $session ||\
+  tmux new -c $path -A -s $session
+  #tmux send-keys -t $session C-z 'nvim .' Enter
