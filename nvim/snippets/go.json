@@ -1,0 +1,55 @@
+{
+  "GoFunc": {
+    "prefix": ["func"],
+    "body": [
+      "func $1() {",
+        "\t$0",
+      "}"
+    ],
+    "description": "Go func template"
+  },
+  "GoMainPackage": {
+    "prefix": ["main_pkg"],
+    "body": [
+      "package main",
+      "",
+      "func main() {",
+        "\t$0",
+      "}"
+    ],
+    "description": "Main package function template"
+  },
+  "GoMain": {
+    "prefix": ["main"],
+    "body": [
+      "func main() {",
+        "\t$0",
+      "}"
+    ],
+    "description": "Main function template"
+  },
+  "GoLogrus": {
+    "prefix": ["logrus"],
+    "body": "logrus.WithTime(time.Now()).Log(logrus.InfoLevel, \"${1:$TM_SELECTED_TEXT}\")"
+  },
+  "GoLog": {
+    "prefix": ["log"],
+    "body": "log.Println(${1:$TM_SELECTED_TEXT});"
+  },
+  "GoConst": {
+    "prefix": ["const"],
+    "body": [
+      "const $1 = $2"
+    ],
+    "description": "Const definition template."
+  },
+  "Type": {
+    "prefix": ["type"],
+    "body": [
+      "type $1 struct {",
+        "\t$0",
+      "}"
+    ],
+    "description": "Type definition template."
+  }
+}

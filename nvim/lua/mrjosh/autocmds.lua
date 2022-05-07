@@ -6,6 +6,11 @@ utils.create_augroup({
 }, 'highlight_yank')
 
 vim.cmd [[
+autocmd BufNewFile,BufRead *.yaml.j2 set syntax=yaml
+autocmd BufNewFile,BufRead *.yml.j2 set syntax=yaml
+]]
+
+vim.cmd [[
   if has("autocmd")
     au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
   endif

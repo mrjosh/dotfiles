@@ -1,0 +1,22 @@
+{
+  "GolangDockerfileTemplate": {
+    "prefix": ["golang"],
+    "body": [
+      "FROM golang:1.17 AS build",
+      "",
+      "WORKDIR /build",
+      "ADD . .",
+      "",
+      "ENV GOOS linux",
+      "ENV GOARCH amd64",
+      "RUN make",
+      "",
+      "# Deploy container",
+      "FROM alpine:3.15.4 AS deploy",
+      "COPY --from=build /build/bin/$1 /$1",
+      "ENTRYPOINT [\"/$1\", \"start\"]"
+    ],
+    "description": "Golang1.17 dockerfile template"
+  }
+}
+

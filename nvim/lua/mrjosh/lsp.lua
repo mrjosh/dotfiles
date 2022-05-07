@@ -1,68 +1,109 @@
 local vim = vim
-local sumneko_root_path = '/Users/josh/.language-servers/lua-language-server'
-local sumneko_binary = sumneko_root_path .. "/bin/macOS/lua-language-server"
+local lspconfig = require 'lspconfig'
+local util = require 'lspconfig.util'
 
+local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+
+--local function on_attach(client, bufnr)
 local function on_attach()
   --require'lsp_compl'.attach(client, bufnr, { server_side_fuzzy_completion = true })
 end
 
-local function setup_servers()
-  require'lspinstall'.setup()
-  local servers = require'lspinstall'.installed_servers()
-  for _, server in pairs(servers) do
-    require'lspconfig'[server].setup{}
-  end
-end
-
-setup_servers()
-
--- Automatically reload after `:LspInstall <server>` so we don't have to restart neovim
-require'lspinstall'.post_install_hook = function ()
-  setup_servers() -- reload installed servers
-  vim.cmd("bufdo e") -- this triggers the FileType autocmd that starts the server
-end
-
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities.textDocument.completion.completionItem.snippetSupport = true
-capabilities.textDocument.completion.completionItem.resolveSupport = {
-  properties = {
-    'documentation',
-    'detail',
-    'additionalTextEdits',
-  }
-}
-
-require'lspconfig'.rust_analyzer.setup {
-  cmd = {"/Users/josh/.local/share/nvim/lspinstall/rust/rust-analyzer"},
+lspconfig.rust_analyzer.setup {
+  cmd = {"/Users/josh/.local/share/nvim/lsp_servers/rust/rust-analyzer"},
   capabilities = capabilities,
 }
 
-require'lspconfig'.yamlls.setup{
-  cmd = {"/Users/josh/.local/share/nvim/lspinstall/yaml/node_modules/yaml-language-server/bin/yaml-language-server"},
+--lspconfig.yamlls.setup{
+  --cmd = {"/Users/josh/.local/share/nvim/lsp_servers/yaml/node_modules/yaml-language-server/bin/yaml-language-server"},
+  --on_attach=on_attach,
+--}
+
+require'lspconfig'.html.setup {
+  capabilities = capabilities,
   on_attach=on_attach,
 }
 
-require'lspconfig'.tsserver.setup{
-  cmd = {"/Users/josh/.node_modules/bin/typescript-language-server", "--stdio"},
-  on_attach=on_attach,
+require'lspconfig'.tsserver.setup{}
+
+require'lspconfig'.cssls.setup {
+  filetypes = { "css", "scss", "less" },
+  capabilities = capabilities,
 }
 
-require'lspconfig'.gopls.setup{
+require'lspconfig'.cssmodules_ls.setup{
+  filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+  cmd = {"cssmodules-language-server"},
+  capabilities = capabilities,
+}
+
+lspconfig.gopls.setup{
   on_attach=on_attach,
-  cmd = {"/Users/josh/go/bin/gopls", "serve"},
-  settings = {
-    gopls = {
-      analyses = {
-        unusedparams = true,
-      },
-      staticcheck = true,
+  filetypes = { "go", "gomod" },
+  cmd = {"/Users/josh/.bin/gopls", "serve"},
+  capabilities = capabilities,
+}
+
+local configs = require'lspconfig.configs'
+if not configs.helm_lint_ls then
+  configs.helm_lint_ls = {
+    default_config = {
+      cmd = {"/Users/josh/code/personal/helm-lint-ls/bin/helm_lint_ls", "serve"},
+      filetypes = {'helm', 'yaml'},
+      root_dir = function(fname)
+        return util.root_pattern('Chart.yaml')(fname)
+      end,
+    },
+  }
+end
+
+lspconfig.helm_lint_ls.setup {}
+
+lspconfig.golangci_lint_ls.setup{
+  on_attach=on_attach,
+  filetypes = {"go", "gomod"},
+  cmd = {
+    "/Users/josh/.local/share/nvim/lsp_servers/golangci_lint_ls/golangci-lint-langserver",
+  },
+  capabilities = capabilities,
+  init_options = {
+    command = {
+      'golangci-lint',
+      'run',
+      --'--enable-all',
+      --'--disable',
+      --'lll',
+      '--skip-files', '.*.gen.go',
+      '--skip-files', '.*_test.go',
+      '--disable-all',
+      '-E', 'structcheck',
+      '-E', 'deadcode',
+      '-E', 'gocyclo',
+      '-E', 'ineffassign',
+      '-E', 'revive',
+      '-E', 'goimports',
+      '-E', 'errcheck',
+      '-E', 'varcheck',
+      '-E', 'goconst',
+      '-E', 'megacheck',
+      '-E', 'misspell',
+      '-E', 'unused',
+      '-E', 'typecheck',
+      '-E', 'staticcheck',
+      '-E', 'govet',
+      '--out-format', 'json',
     },
   },
+  --root_dir = util.root_pattern('go.work') or util.root_pattern('go.mod', '.golangci.yaml', '.git'),
+  root_dir = function(fname)
+    return util.root_pattern 'go.work'(fname) or util.root_pattern('go.mod', '.git')(fname)
+  end,
 }
 
-require'lspconfig'.sumneko_lua.setup {
+lspconfig.sumneko_lua.setup {
   on_attach = on_attach,
-  cmd = {sumneko_binary, "-E", sumneko_root_path .. "/main.lua"};
+  capabilities = capabilities,
+  cmd = {"/Users/josh/.local/share/nvim/lsp_servers/sumneko_lua/extension/server/bin/lua-language-server"};
   settings = {
     Lua = {
       runtime = {
@@ -86,53 +127,10 @@ require'lspconfig'.sumneko_lua.setup {
   },
 }
 
-local opts = {
-  -- whether to highlight the currently hovered symbol
-  -- disable if your cpu usage is higher than you want it
-  -- or you just hate the highlight
-  -- default: true
-  highlight_hovered_item = true,
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+  vim.lsp.diagnostic.on_publish_diagnostics, {
+    update_in_insert = true,
+  }
+)
 
-  -- whether to show outline guides
-  -- default: true
-  show_guides = true,
-}
-
-require('symbols-outline').setup(opts)
-
-require'compe'.setup {
-
-  enabled = true;
-  autocomplete = true;
-  debug = false;
-  min_length = 1;
-  preselect = 'enable';
-  throttle_time = 80;
-  source_timeout = 200;
-  resolve_timeout = 800;
-  incomplete_delay = 400;
-  max_abbr_width = 100;
-  max_kind_width = 100;
-  max_menu_width = 100;
-
-  documentation = {
-    border = { '', '' ,'', ' ', '', '', '', ' ' }, -- the border option is the same as `|help nvim_open_win|`
-    winhighlight = "NormalFloat:CompeDocumentation,FloatBorder:CompeDocumentationBorder",
-    max_width = 120,
-    min_width = 60,
-    max_height = math.floor(vim.o.lines * 0.3),
-    min_height = 1,
-  };
-
-  source = {
-    path = true;
-    buffer = true;
-    calc = true;
-    nvim_lsp = true;
-    nvim_lua = true;
-    vsnip = true;
-    ultisnips = true;
-    luasnip = true;
-  };
-
-}
+require 'mrjosh.lsp-compe'

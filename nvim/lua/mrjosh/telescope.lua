@@ -5,10 +5,19 @@ local themes = require 'telescope.themes'
 local actions = require 'telescope.actions'
 
 tele.setup {
+  pickers = {
+    find_files = {
+      hidden = true,
+    },
+    live_grep = {
+      hidden = true,
+    },
+  },
   defaults = {
     file_ignore_patterns = {
       "vendor",
       "node_modules",
+      ".git",
     },
     mappings = {
       i = {
@@ -20,13 +29,28 @@ tele.setup {
 }
 
 M.live_grep = function ()
- builtin.live_grep(
-   themes.get_dropdown({
-     shorten_path = false,
-     border = true,
-     prompt_title = "< LiveGrep >",
-   })
- )
+  builtin.live_grep(
+    {
+      shorten_path = false,
+      border = true,
+      prompt_title = "< LiveGrep >",
+      file_ignore_patterns = {
+        "vendor",
+        "node_modules",
+        "go.sum",
+      },
+    }
+  )
+end
+
+M.buffers = function()
+  builtin.buffers(
+    themes.get_dropdown({
+      shorten_path = false,
+      border = true,
+      prompt_title = "< Buffers >",
+    }
+  ))
 end
 
 M.search_files = function()
@@ -34,10 +58,9 @@ M.search_files = function()
     themes.get_dropdown({
       shorten_path = false,
       border = true,
-      previewer = false,
       prompt_title = "< FindFiles >",
-    }
-  ))
+    })
+  )
 end
 
 M.search_dotfiles = function()
@@ -48,6 +71,12 @@ M.search_dotfiles = function()
       previewer = false,
       prompt_title = "< Dotfiles >",
       cwd = "$HOME/.config/nvim",
+      file_ignore_patterns = {
+        "vendor",
+        "node_modules",
+        ".git",
+        "plugged",
+      },
     })
   )
 end

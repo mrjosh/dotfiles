@@ -1,0 +1,21 @@
+{
+  "HelmContainerEnv": {
+    "prefix": ["env"],
+    "body": [
+      "- name: $1",
+      "\tvalue: \"$2\""
+    ],
+    "description": "Env help deployment template"
+  },
+  "HelmContainerEnvFromSecret": {
+    "prefix": ["env_secret"],
+    "body": [
+      "- name: $1",
+      "\tvalueFrom:",
+      "\t\tsecretKeyRef:",
+      "\t\t\tname: $1",
+      "\t\t\tkey: $2"
+    ],
+    "description": "Env help deployment template"
+  }
+}
